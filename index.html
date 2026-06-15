@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Special Person</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #e8f4f8; /* Soft blue background */
+            color: #333;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Viewport Container */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-20px);
+        }
+
+        /* --- PASSWORD SCREEN --- */
+        #password-screen {
+            background-color: #e8f4f8;
+            z-index: 10;
+        }
+
+        .lock-box {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .lock-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #0369a1;
+        }
+
+        .lock-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 15px;
+            transition: border 0.3s;
+        }
+
+        .lock-box input:focus {
+            border-color: #0369a1;
+        }
+
+        .lock-box button {
+            background-color: #0369a1;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: background 0.3s;
+        }
+
+        .lock-box button:hover {
+            background-color: #0c4a6e;
+        }
+
+        .error-msg {
+            color: #c94c4c;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* --- QUESTION SCREEN --- */
+        #question-screen {
+            background-color: #e8f4f8;
+            z-index: 5;
+        }
+
+        .question-box h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #0c4a6e;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .btn-reveal {
+            background-color: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .btn-reveal:hover {
+            background-color: #0284c7;
+            transform: scale(1.05);
+        }
+
+        /* --- MAIN CELEBRATION MODAL/POPUP --- */
+        #celebration-screen {
+            background: linear-gradient(135deg, #082f49 0%, #0c4a6e 100%);
+            z-index: 1;
+            color: white;
+        }
+
+        .popup-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 50px 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 600px;
+            width: 90%;
+            z-index: 5;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .popup-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: #a5f3fc; /* Bright cyan glow */
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(165, 243, 252, 0.5);
+            line-height: 1.3;
+        }
+
+        .popup-content p {
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: #e0f2fe;
+        }
+
+        /* --- CELEBRATION ELEMENTS --- */
+        /* Stars & Moon */
+        .moon {
+            position: absolute;
+            top: 40px;
+            right: 50px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at 30% 30%, #e0f2fe, #a5f3fc);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(165, 243, 252, 0.6);
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Fairy Lights */
+        .light-string {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            list-style: none;
+            z-index: 2;
+        }
+
+        .light-bulb {
+            width: 12px;
+            height: 18px;
+            border-radius: 50%;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        .light-bulb:nth-child(odd) { background: #a5f3fc; box-shadow: 0 0 10px #a5f3fc; animation-delay: 0.3s;}
+        .light-bulb:nth-child(even) { background: #0ea5e9; box-shadow: 0 0 10px #0ea5e9; animation-delay: 0.6s;}
+
+        @keyframes glow {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; filter: brightness(1.3); }
+        }
+
+        /* Balloons Container */
+        .balloon-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -150px;
+            width: 60px;
+            height: 75px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            animation: floatUp 7s linear infinite;
+            opacity: 0.8;
+        }
+
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 28px;
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(10deg); opacity: 0; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .popup-content h2 { font-size: 2.2rem; }
+            .question-box h1 { font-size: 1.8rem; }
+            .moon { width: 50px; height: 50px; top: 20px; right: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SCREEN 1: PASSWORD ZONE -->
+    <div id="password-screen" class="screen">
+        <div class="lock-box">
+            <h2>Enter Security Key</h2>
+            <input type="password" id="password-input" placeholder="Hint: Your favorite person's name">
+            <br>
+            <button onclick="checkPassword()">Unlock</button>
+            <p id="error-message" class="error-msg">Incorrect key. Try again, Tosin! ❤️</p>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: THE MAIN QUESTION -->
+    <div id="question-screen" class="screen hidden">
+        <div class="question-box">
+            <h1>Do you remember what date today is? 🤔</h1>
+            <button class="btn-reveal" onclick="revealCelebration()">I think I do...</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: CELEBRATION SURPRISE POPUP -->
+    <div id="celebration-screen" class="screen hidden">
+        <!-- Aesthetic Hanging Lights -->
+        <ul class="light-string">
+            <li class="light-bulb"></li><li class="light-bulb"></li><li class="light-bulb"></li>
+            <li class="light-bulb"></li><li class="light-bulb"></li><li class="light-bulb"></li>
+            <li class="light-bulb"></li><li class="light-bulb"></li><li class="light-bulb"></li>
+        </ul>
+
+        <!-- Moon Element -->
+        <div class="moon"></div>
+
+        <!-- Floating Balloons Container -->
+        <div class="balloon-container" id="balloons-zone"></div>
+        
+        <!-- Stars Container -->
+        <div id="stars-zone"></div>
+
+        <!-- The Content Box -->
+        <div class="popup-content">
+            <h2>Happy Birthday,<br>My Dear Husband Tosin! 🌙✨</h2>
+            <p>🎉 May 15th - A day as special as you are! 🎉<br><br>Wishing you a year as bright as the stars. Thank you for being my forever person. 💙</p>
+        </div>
+    </div>
+
+    <script>
+        // Check password functionality
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            const errorMessage = document.getElementById('error-message');
+            
+            // Password logic matches "Zafrin" (case insensitive)
+            if (input.trim().toLowerCase() === 'zafrin') {
+                document.getElementById('password-screen').classList.add('hidden');
+                document.getElementById('question-screen').classList.remove('hidden');
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        // Allow pressing 'Enter' key to unlock
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // Reveal the final birthday pop-up
+        function revealCelebration() {
+            document.getElementById('question-screen').classList.add('hidden');
+            document.getElementById('celebration-screen').classList.remove('hidden');
+            
+            // Trigger dynamic decorative elements
+            generateStars();
+            generateBalloons();
+        }
+
+        // Dynamic Star Generation
+        function generateStars() {
+            const container = document.getElementById('stars-zone');
+            for (let i = 0; i < 40; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                
+                const size = Math.random() * 3 + 1 + 'px';
+                star.style.width = size;
+                star.style.height = size;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                
+                container.appendChild(star);
+            }
+        }
+
+        // Dynamic Floating Balloons Generation
+        function generateBalloons() {
+            const container = document.getElementById('balloons-zone');
+            const colors = ['#bfdbfe', '#0ea5e9', '#a5f3fc', '#06b6d4', '#0284c7']; // Blue palette
+            
+            setInterval(() => {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                
+                // Randomize positions, colors and speeds
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.backgroundColor = randomColor;
+                balloon.style.left = Math.random() * 100 + 'vw';
+                
+                const sizeWidth = Math.random() * 30 + 40; 
+                balloon.style.width = sizeWidth + 'px';
+                balloon.style.height = (sizeWidth * 1.25) + 'px';
+                
+                balloon.style.animationDuration = Math.random() * 4 + 5 + 's'; 
+                balloon.style.animationDelay = Math.random() * 1 + 's';
+
+                // Add small triangle string base color
+                balloon.style.setProperty('--balloon-color', randomColor);
+                
+                container.appendChild(balloon);
+
+                // Clear memory after float animations end
+                setTimeout(() => {
+                    balloon.remove();
+                }, 9000);
+            }, 600); // Emits a new balloon every 600ms
+        }
+    </script>
+</body>
+</html>
